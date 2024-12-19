@@ -7,11 +7,15 @@ from .slack_handler import SlackHandler
 from .openai_handler import OpenAIHandler
 from .gemini_handler import GeminiHandler
 from .claude_handler import ClaudeHandler
+from .ollama_handler import OllamaHandler
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from .utils import load_json
 
 load_dotenv(os.path.join("config", ".env"))
 
+SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
+SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")
+SIGNING_SECRET = os.getenv("SIGNING_SECRET")
 
 DEFAULT_RESPONSES = load_json("default_responses.json")
 
@@ -23,23 +27,30 @@ logging.basicConfig(level=logging.INFO)
 def initialized_llm_controller():
     controller = LLMController(
         [
+            # {
+            #     "name": "OpenAI",
+            #     "handler": OpenAIHandler,
+            #     "handler_args": {
+            #         "personality": DEFAULT_RESPONSES["features"]["personality"]
+            #     },
+            # },
+            # {
+            #     "name": "Gemini",
+            #     "handler": GeminiHandler,
+            #     "handler_args": {
+            #         "personality": DEFAULT_RESPONSES["features"]["personality"]
+            #     },
+            # },
+            # {
+            #     "name": "Claude",
+            #     "handler": ClaudeHandler,
+            #     "handler_args": {
+            #         "personality": DEFAULT_RESPONSES["features"]["personality"]
+            #     },
+            # },
             {
-                "name": "OpenAI",
-                "handler": OpenAIHandler,
-                "handler_args": {
-                    "personality": DEFAULT_RESPONSES["features"]["personality"]
-                },
-            },
-            {
-                "name": "Gemini",
-                "handler": GeminiHandler,
-                "handler_args": {
-                    "personality": DEFAULT_RESPONSES["features"]["personality"]
-                },
-            },
-            {
-                "name": "Claude",
-                "handler": ClaudeHandler,
+                "name": "Ollama",
+                "handler": OllamaHandler,
                 "handler_args": {
                     "personality": DEFAULT_RESPONSES["features"]["personality"]
                 },
