@@ -27,27 +27,27 @@ logging.basicConfig(level=logging.INFO)
 def initialized_llm_controller():
     controller = LLMController(
         [
-            {
-                "name": "OpenAI",
-                "handler": OpenAIHandler,
-                "handler_args": {
-                    "personality": DEFAULT_RESPONSES["features"]["personality"]
-                },
-            },
-            {
-                "name": "Gemini",
-                "handler": GeminiHandler,
-                "handler_args": {
-                    "personality": DEFAULT_RESPONSES["features"]["personality"]
-                },
-            },
-            {
-                "name": "Claude",
-                "handler": ClaudeHandler,
-                "handler_args": {
-                    "personality": DEFAULT_RESPONSES["features"]["personality"]
-                },
-            },
+            # {
+            #     "name": "OpenAI",
+            #     "handler": OpenAIHandler,
+            #     "handler_args": {
+            #         "personality": DEFAULT_RESPONSES["features"]["personality"]
+            #     },
+            # },
+            # {
+            #     "name": "Gemini",
+            #     "handler": GeminiHandler,
+            #     "handler_args": {
+            #         "personality": DEFAULT_RESPONSES["features"]["personality"]
+            #     },
+            # },
+            # {
+            #     "name": "Claude",
+            #     "handler": ClaudeHandler,
+            #     "handler_args": {
+            #         "personality": DEFAULT_RESPONSES["features"]["personality"]
+            #     },
+            # },
             {
                 "name": "Ollama",
                 "handler": OllamaHandler,

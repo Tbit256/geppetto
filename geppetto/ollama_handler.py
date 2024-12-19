@@ -1,5 +1,6 @@
 import os
 import requests
+import logging
 from typing import Callable, List, Dict
 from dotenv import load_dotenv
 
@@ -46,6 +47,8 @@ class OllamaHandler(LLMHandler):
             status_callback_args: Additional arguments for the status callback
         """
         try:
+            logging.info("Sending message to Ollama: %s", user_prompt)
+            
             # Format the system message with personality
             system_message = {
                 "role": self.system_role,
@@ -72,26 +75,25 @@ class OllamaHandler(LLMHandler):
                 }
             )
             
-            if response.status_code == 200:
-                result = response.json()
-                response_text = result.get("response", "")
+            response.raise_for_status()  # Raise an exception for bad status codes
+            result = response.json()
+            response_text = result.get("response", "")
+            
+            # Add version and model information
+            response_text += f"\n\n_(Geppetto v{VERSION} Source: Ollama Model {self.model})_"
+            
+            if status_callback:
+                status_callback(response_text, *status_callback_args)
+            return response_text
                 
-                # Add version and model information
-                response_text += f"\n\n_(Geppetto v{VERSION} Source: Ollama Model {self.model})_"
-                
-                if status_callback:
-                    status_callback(response_text, *status_callback_args)
-                return response_text
-            else:
-                error_msg = f"Error from Ollama API: {response.status_code} - {response.text}"
-                if status_callback:
-                    status_callback(error_msg, *status_callback_args)
-                return error_msg
-                
+        except requests.exceptions.RequestException as e:
+            error_msg = f"Error connecting to Ollama API: {str(e)}"
+            logging.error(error_msg)
+            return error_msg
+            
         except Exception as e:
             error_msg = f"Error generating content with Ollama: {str(e)}"
-            if status_callback:
-                status_callback(error_msg, *status_callback_args)
+            logging.error(error_msg)
             return error_msg
 
     def get_functionalities(self):
