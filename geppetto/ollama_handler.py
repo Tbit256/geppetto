@@ -1,7 +1,7 @@
 import os
 import requests
 import logging
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Union
 from dotenv import load_dotenv
 
 from .llm_api_handler import LLMHandler
@@ -37,33 +37,43 @@ class OllamaHandler(LLMHandler):
         return "\n".join(formatted)
 
     def llm_generate_content(
-        self, user_prompt: str, status_callback: Callable = None, *status_callback_args
+        self, user_prompt: Union[str, List[Dict]], status_callback: Callable = None, *status_callback_args
     ):
         """Generate content using Ollama API.
         
         Args:
-            user_prompt: The user's input prompt
+            user_prompt: Either a string prompt or a list of message dictionaries
             status_callback: Optional callback for status updates
             status_callback_args: Additional arguments for the status callback
         """
         try:
             logging.info("Sending message to Ollama: %s", user_prompt)
             
-            # Format the system message with personality
-            system_message = {
-                "role": self.system_role,
-                "content": self.personality
-            }
+            # Handle both string and list[dict] input types
+            if isinstance(user_prompt, str):
+                messages = [
+                    {
+                        "role": self.system_role,
+                        "content": self.personality
+                    },
+                    {
+                        "role": self.user_role,
+                        "content": user_prompt
+                    }
+                ]
+            else:
+                # For list input, add system message at the beginning
+                messages = [
+                    {
+                        "role": self.system_role,
+                        "content": self.personality
+                    },
+                    *user_prompt  # Unpack the user messages
+                ]
             
-            # Format the user message
-            user_message = {
-                "role": self.user_role,
-                "content": user_prompt
-            }
-            
-            # Combine messages
-            messages = [system_message, user_message]
+            # Format messages for Ollama
             prompt = self.format_messages(messages)
+            logging.info("Formatted prompt for Ollama: %s", prompt)
             
             # Make request to Ollama API
             response = requests.post(
@@ -82,8 +92,7 @@ class OllamaHandler(LLMHandler):
             # Add version and model information
             response_text += f"\n\n_(Geppetto v{VERSION} Source: Ollama Model {self.model})_"
             
-            if status_callback:
-                status_callback(response_text, *status_callback_args)
+            # Return the response text (don't call status_callback)
             return response_text
                 
         except requests.exceptions.RequestException as e:
