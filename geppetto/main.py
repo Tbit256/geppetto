@@ -15,6 +15,13 @@ load_dotenv(os.path.join("config", ".env"))
 
 DEFAULT_RESPONSES = load_json("default_responses.json")
 
+SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
+SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")
+SIGNING_SECRET = os.getenv("SIGNING_SECRET")
+
+DEFAULT_RESPONSES = load_json("default_responses.json")
+
+
 # Initialize logging
 # TODO: log to a file
 logging.basicConfig(level=logging.INFO)
