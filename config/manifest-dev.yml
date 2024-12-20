@@ -1,6 +1,6 @@
 display_information:
   name: Geppetto-dev
-  description: Advanced Slack bot integrating OpenAI's ChatGPT and DALL-E for interactive AI conversations and image generation.
+  description: An AI-powered IT support bot.
   background_color: "#262729"
 features:
   app_home:
